@@ -62,6 +62,7 @@ public class AssemblyFileImporter {
     }
 
     public void importAssembly() {
+        System.out.println("Test!");
         listOfScaffolds = new ArrayList<>();
         listOfSuperscaffolds = new ArrayList<>();
         // does it update assembly? //
