@@ -25,6 +25,7 @@
 
 package juicebox.tools.utils.original;
 
+import htsjdk.samtools.util.Interval;
 import juicebox.HiC;
 import juicebox.data.ChromosomeHandler;
 import juicebox.data.ExpectedValueFunctionImpl;
@@ -183,8 +184,14 @@ public class ExpectedValueCalculation {
         }
         dist = Math.abs(bin1 - bin2);
 
-
+        if (dist >= actualDistances.length) {
+            dist = actualDistances.length;
+            System.out.println("Dist "+ Integer.toString(dist)+" exceed maxDist "
+                    +Integer.toString(actualDistances.length));
+            dist = actualDistances.length - 1;
+        }
         actualDistances[dist] += weight;
+
 
     }
 

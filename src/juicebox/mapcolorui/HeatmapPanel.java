@@ -213,9 +213,12 @@ public class HeatmapPanel extends JComponent implements Serializable {
     final int screenWidth = getBounds().width;
     final int screenHeight = getBounds().height;
     double binOriginX = hic.getXContext().getBinOrigin();
+    System.out.println("binOriginX " + Double.toString(binOriginX));
+
     double bRight = binOriginX + (screenWidth / scaleFactor);
     double binOriginY = hic.getYContext().getBinOrigin();
     double bBottom = binOriginY + (screenHeight / scaleFactor);
+    System.out.println("binOriginY " + Double.toString(binOriginY));
 
     // tile numbers
     int tLeft = (int) (binOriginX / imageTileWidth);

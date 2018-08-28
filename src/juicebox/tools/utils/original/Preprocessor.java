@@ -446,6 +446,7 @@ public class Preprocessor {
 
                     if (writtenMatrices.contains(currentMatrixKey)) {
                         System.err.println("Error: the chromosome combination " + currentMatrixKey + " appears in multiple blocks");
+                        System.err.println(chr1+" "+bp1+" "+chr2+" "+bp2);
                         if (outputFile != null) outputFile.deleteOnExit();
                         System.exit(58);
                     }
