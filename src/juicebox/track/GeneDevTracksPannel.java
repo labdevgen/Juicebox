@@ -141,7 +141,6 @@ public class GeneDevTracksPannel {
         final HiC hic = superAdapter.getHiC();
         Runnable runnable = new Runnable() {
             public void run() {
-                System.out.println("In");
                 if (hic.getDataset() == null) {
                     JOptionPane.showMessageDialog(superAdapter.getMainWindow(),
                             "HiC file must be loaded to load tracks", "Error", JOptionPane.ERROR_MESSAGE);

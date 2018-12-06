@@ -28,9 +28,11 @@ import juicebox.HiC;
 import juicebox.gui.SuperAdapter;
 import juicebox.tools.dev.Private;
 import juicebox.windowui.NormalizationType;
+import org.broad.igv.DirectoryManager;
 import org.broad.igv.bbfile.BBFileReader;
 import org.broad.igv.bigwig.BigWigDataSource;
 import org.broad.igv.feature.genome.Genome;
+import org.broad.igv.feature.genome.GenomeListItem;
 import org.broad.igv.feature.genome.GenomeManager;
 import org.broad.igv.feature.tribble.FeatureFileHeader;
 import org.broad.igv.feature.tribble.TribbleIndexNotFoundException;
@@ -38,6 +40,8 @@ import org.broad.igv.track.*;
 import org.broad.igv.util.ResourceLocator;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -285,6 +289,36 @@ public class HiCTrackManager {
     }
     */
 
+    private void getGenomeFromChrSizes(String genomeID) throws IOException {
+        JFileChooser fileopen = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("ChromSize files",
+                                                                        "chrom.sizes");
+        fileopen.setFileFilter(filter);
+
+        int ret = fileopen.showDialog(null,"Open");
+        chooser.setDialogTitle("Open Chromosome Size file for the genome" + genomeID);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            java.io.File genomeFile = fileopen.getSelectedFile();;
+            GenomeListItem newItem =  new GenomeListItem(genomeID,
+                    genomeFile.getAbsolutePath(),
+                    genomeID);
+            GenomeManager genomeManager = GenomeManager.getInstance();
+
+            // Get name of the file where genomes will be saved
+            File user_file = new File(DirectoryManager.getGenomeCacheDirectory(),
+                                                GenomeManager.getUserDefinedGenomeListFile());
+            // Create this file if it does not exists
+            if (! user_file.exists()){
+                user_file.getParentFile().mkdirs();
+                user_file.createNewFile();
+            }
+
+            // Save new genome to user-defined genomes
+            genomeManager.getUserDefinedGenomeArchiveList();
+            genomeManager.addGenomeItem(newItem,true);
+        }
+    }
+
     private Genome loadGenome() {
         String genomePath;
         Genome genome = GenomeManager.getInstance().getCurrentGenome();
@@ -304,6 +338,9 @@ public class HiCTrackManager {
             try {
                 genome = GenomeManager.getInstance().loadGenome(genomePath, null);
             } catch (IOException e) {
+                // failed to load genome from igv
+                // lets try to load it from user dir --> use findGenomeListItemById
+                // or create one from chrsize file
                 System.err.println("Error loading genome: " + genomePath + " " + e.getLocalizedMessage());
             }
 
@@ -312,7 +349,7 @@ public class HiCTrackManager {
          * TODO potential fix for ASSEMBLY vs assembly @sa501428
          List<Chromosome> cleanedChromosomes = new ArrayList<>();
          for(String name : genome.getAllChromosomeNames()){
-         Chromosome chr = genome.getChromosome(name);
+         Chromosome chr = gegenomePathnome.getChromosome(name);
          //cleanedChromosomes.add(chr);
          cleanedChromosomes.add(new Chromosome(chr.getIndex(), ChromosomeHandler.cleanUpName(name), chr.getLength()));
          }
