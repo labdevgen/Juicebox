@@ -59,17 +59,18 @@ public class Load2DAnnotationsDialog extends JDialog implements TreeSelectionLis
     private final JTextField fTextField;
     private final Map<String, MutableTreeNode> loadedAnnotationsMap = new HashMap<>();
     private File openAnnotationPath = DirectoryManager.getUserDirectory();
+    final DefaultMutableTreeNode top;
+    final MainWindow window;
 
     public Load2DAnnotationsDialog(final LayersPanel layersPanel, final SuperAdapter superAdapter) {
         super(layersPanel, "Select 2D annotation file(s) to open");
         setModal(true);
 
         final ChromosomeHandler chromosomeHandler = superAdapter.getHiC().getChromosomeHandler();
-        final MainWindow window = superAdapter.getMainWindow();
+        window = superAdapter.getMainWindow();
 
         //Create the nodes.
-        final DefaultMutableTreeNode top =
-                new DefaultMutableTreeNode(new ItemInfo("root", ""), true);
+         top = new DefaultMutableTreeNode(new ItemInfo("root", ""), true);
 
         createNodes(top, superAdapter.getHiC());
 
@@ -124,42 +125,7 @@ public class Load2DAnnotationsDialog extends JDialog implements TreeSelectionLis
         urlButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                String url = JOptionPane.showInputDialog("Enter URL: ");
-
-                if (url != null && url.length() > 0) {
-                    if (HiCFileTools.isDropboxURL(url)) {
-                        url = HiCFileTools.cleanUpDropboxURL(url);
-                    }
-                    url = url.trim();
-                    if (customAddedFeatures == null) {
-                        customAddedFeatures = new DefaultMutableTreeNode(
-                                new ItemInfo("Added 2D Features", ""), true);
-                        top.add(customAddedFeatures);
-                    }
-
-                    if (loadedAnnotationsMap.containsKey(url)) {
-                        if (HiCGlobals.guiIsCurrentlyActive) {
-                            int dialogResult = JOptionPane.showConfirmDialog(window,
-                                    "File is already loaded. Would you like to overwrite it?", "Warning",
-                                    JOptionPane.YES_NO_OPTION);
-                            if (dialogResult == JOptionPane.YES_OPTION) {
-                                customAddedFeatures.remove(loadedAnnotationsMap.get(url));
-                                loadedAnnotationsMap.remove(url);
-                            } else {
-                                return;
-                            }
-                        }
-                    }
-
-                    DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(
-                            new ItemInfo(url, url), false);
-
-                    loadedAnnotationsMap.put(url, treeNode);
-                    customAddedFeatures.add(treeNode);
-                    expandTree();
-                    tree.updateUI();
-                }
+                loadFromUrl();
             }
         });
         urlButton.setPreferredSize(new Dimension((int) urlButton.getPreferredSize().getWidth(),
@@ -217,6 +183,47 @@ public class Load2DAnnotationsDialog extends JDialog implements TreeSelectionLis
                 }
             }
         });
+    }
+
+    public void loadFromUrl(String url){
+        if (url != null && url.length() > 0) {
+            if (HiCFileTools.isDropboxURL(url)) {
+                url = HiCFileTools.cleanUpDropboxURL(url);
+            }
+            url = url.trim();
+            if (customAddedFeatures == null) {
+                customAddedFeatures = new DefaultMutableTreeNode(
+                        new ItemInfo("Added 2D Features", ""), true);
+                top.add(customAddedFeatures);
+            }
+
+            if (loadedAnnotationsMap.containsKey(url)) {
+                if (HiCGlobals.guiIsCurrentlyActive) {
+                    int dialogResult = JOptionPane.showConfirmDialog(window,
+                            "File is already loaded. Would you like to overwrite it?", "Warning",
+                            JOptionPane.YES_NO_OPTION);
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        customAddedFeatures.remove(loadedAnnotationsMap.get(url));
+                        loadedAnnotationsMap.remove(url);
+                    } else {
+                        return;
+                    }
+                }
+            }
+
+            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(
+                    new ItemInfo(url, url), false);
+
+            loadedAnnotationsMap.put(url, treeNode);
+            customAddedFeatures.add(treeNode);
+            expandTree();
+            tree.updateUI();
+        }
+    }
+
+    private void loadFromUrl(){
+        String url = JOptionPane.showInputDialog("Enter URL: ");
+        loadFromUrl(url);
     }
 
     public static TreePath getPath(TreeNode treeNode) {

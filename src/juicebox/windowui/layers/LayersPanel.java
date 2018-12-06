@@ -61,6 +61,14 @@ public class LayersPanel extends JDialog {
     private final JPanel layerBoxGUI2DAnnotations = new JPanel(new GridLayout(0, 1));
     private final JTabbedPane tabbedPane;
 
+    public Load2DAnnotationsDialog getLoad2DAnnotationsDialog(){
+        return (load2DAnnotationsDialog);
+    }
+
+    public void setLoad2DAnnotationsDialog(Load2DAnnotationsDialog load2DAnnotationsDialog){
+        load2DAnnotationsDialog = load2DAnnotationsDialog;
+    }
+
     public LayersPanel(final SuperAdapter superAdapter) {
         super(superAdapter.getMainWindow(), "Annotations Layer Panel");
         rootPane.setGlassPane(disabledGlassPane);
@@ -138,6 +146,9 @@ public class LayersPanel extends JDialog {
         buttonPanel.add(loadFromURLButton);
         JButton refreshButton = new JButton("Refresh View");
         buttonPanel.add(refreshButton);
+        final JButton geneDevTracksButton = new JButton("Add GeneDev tracks for Anopheles");
+        buttonPanel.add(geneDevTracksButton);
+
 
         final JPanel pane = new JPanel(new BorderLayout());
         pane.add(scrollPane, BorderLayout.CENTER);
@@ -203,6 +214,15 @@ public class LayersPanel extends JDialog {
                 redraw1DLayerPanels(superAdapter, layerBoxGUI, pane);
             }
         });
+
+        geneDevTracksButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GeneDevTracksPannel geneDevTracksPannel = new juicebox.track.GeneDevTracksPannel();
+                geneDevTracksPannel.show(superAdapter, repaint1DLayersPanel);
+            }
+        });
+
         return pane;
     }
 
