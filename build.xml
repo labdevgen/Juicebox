@@ -148,6 +148,10 @@
         <pathelement location="${basedir}/lib/general/jsi1.1.jar"/>
     </path>
 
+    <path id="library.jsoup.1.11.3.classpath">
+        <pathelement location="${basedir}/lib/jsoup-1.11.3.jar"/>
+    </path>
+
 
     <!-- Modules -->
 
@@ -177,6 +181,7 @@
         <path refid="library.jcuda.classpath"/>
         <path refid="library.general.classpath"/>
         <path refid="library.jsi1.1.classpath"/>
+        <path refid="library.jsoup.1.11.3.classpath"/>
     </path>
 
     <path id="juicebox.runtime.production.module.classpath">
@@ -185,6 +190,7 @@
         <path refid="library.jcuda.classpath"/>
         <path refid="library.general.classpath"/>
         <path refid="library.jsi1.1.classpath"/>
+        <path refid="library.jsoup.1.11.3.classpath"/>
     </path>
 
     <path id="juicebox.module.classpath">
@@ -194,6 +200,7 @@
         <path refid="library.jcuda.classpath"/>
         <path refid="library.general.classpath"/>
         <path refid="library.jsi1.1.classpath"/>
+        <path refid="library.jsoup.1.11.3.classpath"/>
     </path>
 
     <path id="juicebox.runtime.module.classpath">
@@ -203,6 +210,7 @@
         <path refid="library.jcuda.classpath"/>
         <path refid="library.general.classpath"/>
         <path refid="library.jsi1.1.classpath"/>
+        <path refid="library.jsoup.1.11.3.classpath"/>
     </path>
 
 
@@ -288,6 +296,7 @@
             <zipfileset src="${basedir}/lib/jcuda/jcudaUtils-0.0.4.jar"/>
             <zipfileset src="${basedir}/lib/general/guava-18.0.jar"/>
             <zipfileset src="${basedir}/lib/general/VectorGraphics2D-0.11.jar"/>
+            <zipfileset src="${basedir}/lib/jsoup-1.11.3.jar"/>
         </jar>
         <copy file="${temp.jar.path.Juicebox.jar}" tofile="${artifact.temp.output.juicebox:jar}/Juicebox.jar"/>
     </target>
@@ -304,6 +313,7 @@
             <zipfileset src="${basedir}/lib/general/jsi1.1.jar" excludes="META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA"/>
             <zipfileset src="${basedir}/lib/general/guava-18.0.jar"/>
             <zipfileset src="${basedir}/lib/general/VectorGraphics2D-0.11.jar"/>
+            <zipfileset src="${basedir}/lib/jsoup-1.11.3.jar"/>
             <zipfileset src="${basedir}/lib/broadinstitute/igv.jar"/>
             <zipfileset src="${basedir}/lib/broadinstitute/htsjdk-1.139.jar"/>
             <zipfileset src="${basedir}/lib/jcuda/jcuda-0.8.0.jar"/>

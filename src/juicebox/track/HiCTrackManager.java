@@ -292,11 +292,11 @@ public class HiCTrackManager {
     private void getGenomeFromChrSizes(String genomeID) throws IOException {
         JFileChooser fileopen = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("ChromSize files",
-                                                                        "chrom.sizes");
+                                                                        ".chrom.sizes");
         fileopen.setFileFilter(filter);
 
         int ret = fileopen.showDialog(null,"Open");
-        chooser.setDialogTitle("Open Chromosome Size file for the genome" + genomeID);
+        fileopen.setDialogTitle("Open Chromosome Size file for the genome" + genomeID);
         if (ret == JFileChooser.APPROVE_OPTION) {
             java.io.File genomeFile = fileopen.getSelectedFile();;
             GenomeListItem newItem =  new GenomeListItem(genomeID,
@@ -318,7 +318,25 @@ public class HiCTrackManager {
             genomeManager.addGenomeItem(newItem,true);
         }
     }
-
+    private Genome loadUserDefinedGenome(String genomeID){
+        GenomeListItem matchingGenome = null;
+        Genome genome = null;
+        try {
+            matchingGenome = GenomeManager.getInstance().findGenomeListItemById(genomeID);
+        }
+        catch (IOException e) {
+            System.out.println("Genome " + genomeID + " not found in user-defined directory due to IO-exception");
+        }
+        if (matchingGenome != null) { // We were able to find genome in user-defined list
+            try {
+                genome = GenomeManager.getInstance().loadGenome(matchingGenome.getLocation(),null);
+            }
+            catch (IOException e){
+                System.out.println("Error loading genome "+genomeID + " from location "+matchingGenome.getLocation());
+            }
+        }
+        return (genome);
+    }
     private Genome loadGenome() {
         String genomePath;
         Genome genome = GenomeManager.getInstance().getCurrentGenome();
@@ -338,10 +356,27 @@ public class HiCTrackManager {
             try {
                 genome = GenomeManager.getInstance().loadGenome(genomePath, null);
             } catch (IOException e) {
-                // failed to load genome from igv
-                // lets try to load it from user dir --> use findGenomeListItemById
-                // or create one from chrsize file
-                System.err.println("Error loading genome: " + genomePath + " " + e.getLocalizedMessage());
+                String genomeID = hic.getDataset().getGenomeId();
+                GenomeListItem matchingGenome = null;
+                // failed to load genome from igv server
+                // lets try to load it from user dir
+                genome = loadUserDefinedGenome(genomeID);
+                if (genome == null){ // we cann't load genome from user list
+                    // lets create one from chrsize file
+                    JOptionPane.showMessageDialog(null,"Cann't load genome. Please select appropiate chrsize file",
+                            "Dialog",
+                            JOptionPane.ERROR_MESSAGE);
+                    try {
+                        getGenomeFromChrSizes(genomeID);
+                    }
+                    catch (IOException err){
+                        err.printStackTrace();
+                    }
+                    genome = loadUserDefinedGenome(genomeID);
+                    if (genome == null) {
+                        System.err.println("Error loading genome: " + genomePath + " " + e.getLocalizedMessage());
+                    }
+                }
             }
 
         }
