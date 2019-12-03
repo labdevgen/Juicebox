@@ -24,6 +24,7 @@
 
 package juicebox.gui;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
 import juicebox.MainWindow;
@@ -395,6 +396,7 @@ public class SuperAdapter {
             return false;
         }
 
+        boolean different_genome = false; // set True when ctrl has different genome name
         if (allFilesAreHiC) {
             mainViewPanel.setIgnoreUpdateThumbnail(true);
             //heatmapPanel.setBorder(LineBorder.createBlackLineBorder());
@@ -409,8 +411,8 @@ public class SuperAdapter {
                 return false;
             }
             if (control && !dataset.getGenomeId().equals(hic.getDataset().getGenomeId())) {
-                JOptionPane.showMessageDialog(mainWindow, "Cannot load maps with different genomes");
-                return false;
+                JOptionPane.showMessageDialog(mainWindow, "Maps have different genomes; this will rename ctrl genome");
+                different_genome = true;
             }
             if (control && dataset.getVersion() != hic.getDataset().getVersion() &&
                     (dataset.getVersion() < 7 || hic.getDataset().getVersion() < 7)) {
@@ -424,7 +426,9 @@ public class SuperAdapter {
                 }
             }
 
-            if (!control && hic.getDataset() != null && !dataset.getGenomeId().equals(hic.getDataset().getGenomeId())) {
+            if (!control && hic.getDataset() != null &&
+                    (!dataset.getGenomeId().equals(hic.getDataset().getGenomeId()) || different_genome )
+                    ) {
                 resetControlMap();
             }
 
@@ -434,6 +438,11 @@ public class SuperAdapter {
                 options = HiCGlobals.enabledMatrixTypesWithControl;
                 mainViewPanel.setEnabledForNormalization(true, hic.getNormalizationOptions(true),
                         dataset.getVersion() >= HiCGlobals.minVersion);
+                // rename genome
+                if (different_genome) {
+                    String curr_genome = hic.getDataset().getGenomeId();
+                    hic.getControlDataset().setGenomeId(curr_genome);
+                }
             } else {
                 hic.reset();
                 hic.setDataset(dataset);
